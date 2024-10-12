@@ -28,11 +28,15 @@ public:
     node *head;
     int rows;
     int cols;
+    int gamestartdistance;
+    int currentdistance;
     grid() 
     {
         head = NULL;
         rows=0;
         cols=0;
+        gamestartdistance=0;
+        currentdistance=0;
     }
     void creategrid(int rows, int cols) 
     {
@@ -76,6 +80,7 @@ public:
             }
         }
     }
+    
     node *getnode(int rows,int cols)
     {
         node *temp=head;
@@ -107,7 +112,101 @@ public:
             targetNode->data = elem[i];
         }
     }
-    
+    node *getkeylocation()
+    {
+        node *temp=head;
+        node *temp2=head;
+        for(int i=0;i<rows;i++)
+        {
+            for(int j=0;j<cols;j++)
+            {
+            if(temp2->data=='K')
+            {
+            return temp2;
+            }
+            temp2=temp2->right;
+            }
+        temp=temp->down;
+        temp2=temp;
+        }
+        return  NULL;// key missing
+    }
+
+     node *getplayerposition()
+    {
+        node *temp=head;
+        node *temp2=head;
+        for(int i=0;i<rows;i++)
+        {
+            for(int j=0;j<cols;j++)
+            {
+            if(temp2->data=='P')
+            {
+            return temp2;
+            }
+            temp2=temp2->right;
+            }
+        temp=temp->down;
+        temp2=temp;
+        }
+        return  NULL;// nahi mila kuch
+    }
+    void cityblockdistanceformula()
+    {
+        node *key=getkeylocation();
+        node *playerloc=getplayerposition();
+     
+        node *temp=head;
+        node *temp2=head;
+        int playerxaxix=0;
+        int playeryaxix=0;
+        int keyxaxix=0;
+        int keyyaxix=0;
+        for(int i=0;i<rows;i++)
+        {
+            for(int j=0;j<cols;j++)
+            {
+            if(temp2==key)
+            {
+            keyxaxix=i;
+            keyyaxix=j;
+            }
+            if(temp2==playerloc)
+            {
+                playerxaxix=i;
+                playeryaxix=j;
+            }
+            temp2=temp2->right;
+            }
+        temp=temp->down;
+        temp2=temp;
+        }
+        if(gamestartdistance==0)
+        {
+            this->gamestartdistance=abs(playerxaxix-keyxaxix)+abs(playeryaxix-keyyaxix);
+            return ;
+        }
+        this->currentdistance=abs(playerxaxix-keyxaxix)+abs(playeryaxix-keyyaxix);
+
+    }
+
+    void sensepower()
+    {
+        cityblockdistanceformula();
+        if(gamestartdistance>currentdistance)
+        {
+            cout<<"Your Are getting Futher"<<endl;
+        }
+        else if (currentdistance>gamestartdistance)
+        {
+            cout<<"Your are getting closer"<<endl;
+        }
+        else 
+        {
+            cout<<"your are at the same distance noob"<<endl;
+        }
+        gamestartdistance = currentdistance;
+    }
     
     void print() 
     {
@@ -215,14 +314,19 @@ int main()
     g.creategrid(10, 10);
     g.placerandomelements();
     g.print();
+    g.cityblockdistanceformula();
     playermovement m(g);
     m.downmove();
+    g.sensepower();
     g.print();
     m.rightmove();
+    g.sensepower();
     g.print();
     m.leftmove();
+    g.sensepower();
     g.print();
     m.upmove();
+    g.sensepower();
     g.print();
     
     return 0;
