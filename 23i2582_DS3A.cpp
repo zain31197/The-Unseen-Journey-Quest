@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 class node 
@@ -24,13 +26,20 @@ class grid
 {
 public:
     node *head;
+    int rows;
+    int cols;
     grid() 
     {
         head = NULL;
+        rows=0;
+        cols=0;
     }
     void creategrid(int rows, int cols) 
     {
-        if (rows == 0 || cols == 0) return;
+        if (rows == 0 || cols == 0) 
+        return;
+        this->rows=rows;
+        this->cols=cols;
         head = new node('#');  
         node* temp = head;     
         node* prevrow = NULL;  
@@ -67,6 +76,38 @@ public:
             }
         }
     }
+    node *getnode(int rows,int cols)
+    {
+        node *temp=head;
+        for(int i=0;i<rows;i++)
+        {
+            temp=temp->down;
+        }
+        for(int j=0;j<cols;j++)
+        {
+            temp=temp->right;
+        }
+        return temp;
+    }
+    void placerandomelements()
+    {
+          srand(time(0));
+          char elem[]={'P', 'K', 'D', 'C', 'B'};
+          int size=5;
+             int randomRow, randomCol;
+            node* targetNode;
+           for(int i=0;i<size;i++)
+           {
+            do {
+                randomRow = rand() % rows;
+                randomCol = rand() % cols;
+                targetNode = getnode(randomRow, randomCol);
+            } while (targetNode->data != '#');
+
+            targetNode->data = elem[i];
+        }
+    }
+    
     
     void print() 
     {
@@ -92,8 +133,18 @@ class playermovement {
     
     playermovement(grid &g)
     {
-        position=g.head;
-        position->data='P';
+        for(int i=0;i<g.rows;i++)
+        {
+            for(int j=0;j<g.cols;j++)
+            {
+                node *temp=g.getnode(i,j);
+                if(temp->data=='P')
+                {
+                    position=temp;
+                    return ;
+                }
+            }
+        }
     }
     void leftmove()
     {
@@ -162,6 +213,7 @@ int main()
 {
     grid g;
     g.creategrid(10, 10);
+    g.placerandomelements();
     g.print();
     playermovement m(g);
     m.downmove();
