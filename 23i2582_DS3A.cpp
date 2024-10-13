@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stack>
 #include <cstdlib>
 #include <ctime>
 using namespace std;
@@ -181,31 +182,32 @@ public:
         temp=temp->down;
         temp2=temp;
         }
-        if(gamestartdistance==0)
-        {
-            this->gamestartdistance=abs(playerxaxix-keyxaxix)+abs(playeryaxix-keyyaxix);
-            return ;
-        }
-        this->currentdistance=abs(playerxaxix-keyxaxix)+abs(playeryaxix-keyyaxix);
+    currentdistance = abs(playerxaxix - keyxaxix) + abs(playeryaxix - keyyaxix);
+    if (gamestartdistance == 0)
+    {
+        gamestartdistance = currentdistance;
+    }
 
     }
 
     void sensepower()
     {
         cityblockdistanceformula();
+        // cout<<"Game start Distance"<<gamestartdistance<<endl;
+        // cout<<"Current Distance"<<currentdistance<<endl;
         if(gamestartdistance>currentdistance)
         {
-            cout<<"Your Are getting Futher"<<endl;
+            cout<<"Your are getting closer"<<endl;
         }
         else if (currentdistance>gamestartdistance)
         {
-            cout<<"Your are getting closer"<<endl;
+            cout<<"Your Are getting Futher"<<endl;
         }
         else 
         {
             cout<<"your are at the same distance noob"<<endl;
         }
-        gamestartdistance = currentdistance;
+         gamestartdistance = currentdistance; // Update gamestartdistance for next comparison.
     }
     
     void print() 
@@ -229,9 +231,11 @@ public:
 class playermovement {
     public:
     node *position;
-    
+    stack <node*> undo;
+    int remainingundo;
     playermovement(grid &g)
     {
+        remainingundo=5;
         for(int i=0;i<g.rows;i++)
         {
             for(int j=0;j<g.cols;j++)
@@ -245,6 +249,16 @@ class playermovement {
             }
         }
     }
+    void move(node *newposition)
+    {
+        if(remainingundo>0)
+        {
+            undo.push(position);
+        }
+        position->data = '#';
+        position = newposition;
+        position->data = 'P';
+    }
     void leftmove()
     {
         if(position->left==NULL)
@@ -252,13 +266,7 @@ class playermovement {
             cout<<"invalid position"<<endl;
             return ;
         }
-        if(position->left!=NULL)
-        {
-           
-            position->data='#';
-            position=position->left;
-            position->data='P';
-        }
+        move(position->left);
     }
      void rightmove()
     {
@@ -267,13 +275,7 @@ class playermovement {
             cout<<"invalid position"<<endl;
             return ;
         }
-        if(position->right!=NULL)
-        {
-           
-            position->data='#';
-            position=position->right;
-            position->data='P';
-        }
+          move(position->right);
     }
     void upmove()
     {
@@ -282,13 +284,7 @@ class playermovement {
             cout<<"invalid position"<<endl;
             return ;
         }
-        if(position->up!=NULL)
-        {
-           
-            position->data='#';
-            position=position->up;
-            position->data='P';
-        }
+          move(position->up);
     }
     void downmove()
     {
@@ -297,15 +293,24 @@ class playermovement {
             cout<<"invalid position"<<endl;
             return ;
         }
-        if(position->down!=NULL)
-        {
-           
-            position->data='#';
-            position=position->down;
-            position->data='P';
-        }
+          move(position->down);
     }
-
+void undofeature()
+{
+    if(!undo.empty()&&remainingundo>0)
+    {
+        node *prevpos=undo.top();
+        undo.pop();
+        position->data='#';
+        position=prevpos;
+        position->data='P';
+        remainingundo--;
+         cout << "Undo successful. Remaining undos: " << remainingundo << endl;
+        } else {
+            cout << "No more undos available!" << endl;
+        }
+    
+}
     
 };
 int main() 
@@ -328,6 +333,7 @@ int main()
     m.upmove();
     g.sensepower();
     g.print();
-    
+    m.undofeature();
+    g.print();
     return 0;
 }
