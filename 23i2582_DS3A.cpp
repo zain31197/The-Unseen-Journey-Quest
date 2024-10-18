@@ -226,10 +226,13 @@ public:
     bool gameover;
 
     playermovement(grid& g) {
-        remainingundo = 5;
         position = g.getplayerposition();
         noofmovesremaining=8;
         gameover=false;
+    }
+    void setundovalues(int n)
+    {
+        this->remainingundo=n;
     }
     void calculatefinalscore()
     {
@@ -289,7 +292,10 @@ public:
         }
         move(position->up);
     }
-
+int getundomoves()
+{
+    return remainingundo;
+}
     void downmove() {
         if (position->down == nullptr) {
             cout << "Invalid move!" << endl;
@@ -319,15 +325,41 @@ public:
 };
 
 int main() {
+    int level;
+    cout<<"Please enter the level difficulty for EASY press 1 ,for MEDIUM Press 2 and for HARD press 3"<<endl;
+    cin>>level;
     srand(time(0));
     grid g;
-    g.creategrid(10, 10);
+    if(level==1)
+    {
+        g.creategrid(10, 10);
+    }
+    else if(level==2)
+    {
+        g.creategrid(15, 15);
+    }
+    else 
+    {
+    g.creategrid(20, 20);
+    }
     g.placerandomelements();
     g.placecoinrandomly();
     g.print();
     g.sensepower();
     
     playermovement p(g);
+     if(level==1)
+    {
+       p.setundovalues(6);
+    }
+    else if(level==2)
+    {
+            p.setundovalues(4);
+    }
+    else 
+    {
+        p.setundovalues(1);
+    }
     char choice;
     do {
         cout << "Enter move (w/a/s/d) or 'u' for undo: ";
@@ -340,6 +372,7 @@ int main() {
             case 'u': p.undofeature(); break;
             default: cout << "Invalid input!" << endl;
         }
+        cout<<"Remaining Undo Moves "<<p.getundomoves()<<endl;
         cout<<"Hint : "<<endl;
         g.sensepower();
         cout<<"Score : "<<score<<endl;
