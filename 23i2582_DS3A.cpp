@@ -44,13 +44,13 @@ public:
             return;
         this->rows = rows;
         this->cols = cols;
-        head = new node('#');
+        head = new node('.');
         node* temp = head;
         node* prevrow = NULL;
         for (int i = 0; i < rows; i++) {
             node* rowhead = temp;
             for (int j = 1; j < cols; j++) {
-                node* newNode = new node('#');
+                node* newNode = new node('.');
                 temp->right = newNode;
                 newNode->left = temp;
                 temp = temp->right;
@@ -66,7 +66,7 @@ public:
                 }
             }
             if (i < rows - 1) {
-                node* nextRow = new node('#');
+                node* nextRow = new node('.');
                 rowhead->down = nextRow;
                 nextRow->up = rowhead;
                 temp = nextRow;
@@ -96,7 +96,7 @@ public:
                 randomRow = rand() % rows;
                 randomCol = rand() % cols;
                 targetNode = getnode(randomRow, randomCol);
-            } while (targetNode->data != '#');
+            } while (targetNode->data != '.');
             targetNode->data = elem[i];
         }
     }
@@ -111,7 +111,7 @@ public:
                 randomRow = rand() % rows;
                 randomCol = rand() % cols;
                 targetNode = getnode(randomRow, randomCol);
-            } while (targetNode->data != '#');
+            } while (targetNode->data != '.');
             targetNode->data = 'C';
         }
     }
@@ -122,7 +122,7 @@ public:
             node* temp2 = temp;
             while (temp2 != nullptr) {
                 if (temp2->data == 'C') {
-                    temp2->data = '#';
+                    temp2->data = '.';
                 }
                 temp2 = temp2->right;
             }
@@ -224,11 +224,20 @@ public:
     int remainingundo;
     int noofmovesremaining;
     bool gameover;
-
+    bool keystatus;
     playermovement(grid& g) {
         position = g.getplayerposition();
-        noofmovesremaining=8;
+        noofmovesremaining=15;
         gameover=false;
+        keystatus=false;
+    }
+    void setkeystatustrue()
+    {
+        this->keystatus=true;
+    }
+    bool getkeystatus()
+    {
+        return keystatus;
     }
     void setundovalues(int n)
     {
@@ -254,7 +263,28 @@ public:
         if (newposition->data == 'B') {
             cout << "You steped in to Bomb Game Over" << endl;
             calculatefinalscore();
+             gameover=true;
             return;
+        }
+        if(newposition->data=='K')
+        {
+            setkeystatustrue();
+        }
+        if(newposition->data=='D')
+        {
+            if(getkeystatus()==true)
+            {
+                cout<<"Congratulations you Found the key and enter the exit Door"<<endl;
+                cout<<"GAME END"<<endl;
+                calculatefinalscore();
+                gameover=true;
+                return;
+            }
+            if(getkeystatus()==false)
+            {
+                cout<<"You cannot enter the exit door without key"<<endl;
+                return;
+            }
         }
         if (remainingundo > 0) {
             undo.push(position);
@@ -264,7 +294,7 @@ public:
             score+=2;
             remainingundo++;
         }
-        position->data = '#';
+        position->data = '.';
         position = newposition;
         position->data = 'P';
     }
@@ -313,7 +343,7 @@ int getundomoves()
             cout << "No remaining undo power!" << endl;
             return;
         }
-        position->data = '#';
+        position->data = '.';
         position = undo.top();
         undo.pop();
         position->data = 'P';
