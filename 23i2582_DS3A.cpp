@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <vector>
 #include <ctime>
-
 using namespace std;
 int score=0;
 class node {
@@ -30,6 +29,8 @@ public:
     int cols;
     int gamestartdistance;
     int currentdistance;
+    int playerxaxix;
+    int playeryaxix;
 
     grid() {
         head = NULL;
@@ -37,6 +38,21 @@ public:
         cols = 0;
         gamestartdistance = 0;
         currentdistance = 0;
+        playerxaxix=0;
+        playeryaxix=0;
+    }
+    void setplayeraxix(int x,int y)
+    {
+        this->playerxaxix=x;
+        this->playeryaxix=y;
+    }
+    int getplayerxaxix()
+    {
+        return playerxaxix;
+    }
+    int getplayeryaxix()
+    {
+        return playeryaxix;
     }
 
     void creategrid(int rows, int cols) {
@@ -93,10 +109,15 @@ public:
         node* targetNode;
         for (int i = 0; i < size; i++) {
             do {
+                
                 randomRow = rand() % rows;
                 randomCol = rand() % cols;
                 targetNode = getnode(randomRow, randomCol);
             } while (targetNode->data != '.');
+            if(elem[i]=='P')
+            {
+            setplayeraxix(randomRow,randomCol);
+            }
             targetNode->data = elem[i];
         }
     }
@@ -159,6 +180,7 @@ public:
         }
         return nullptr;
     }
+  
 
     void cityblockdistanceformula() {
         node* key = getkeylocation();
@@ -225,11 +247,20 @@ public:
     int noofmovesremaining;
     bool gameover;
     bool keystatus;
+    int playerxaxix;
+    int playeryaxix;
     playermovement(grid& g) {
         position = g.getplayerposition();
         noofmovesremaining=15;
         gameover=false;
         keystatus=false;
+        this->playerxaxix=g.getplayerxaxix();
+        this->playeryaxix=g.getplayeryaxix();
+    }
+    void printplayeraxix()
+    {
+        cout<<"x"<<playerxaxix<<endl;
+        cout<<"y"<<playeryaxix<<endl;
     }
     void setkeystatustrue()
     {
@@ -293,17 +324,27 @@ public:
             cout << "Coin collected!" << endl;
             score+=2;
             remainingundo++;
+            collectedCoins.push_back({playerxaxix,playeryaxix});
         }
         position->data = '.';
         position = newposition;
         position->data = 'P';
     }
-
+    void printcoinslocation()
+    {
+        cout<<"Coins Collected at these locations"<<endl;
+        for(const auto &coin:collectedCoins)
+        {
+            cout<<"("<<coin.first<<","<<coin.second<<")"<<" ";
+        }
+        cout<<endl;
+    }
     void leftmove() {
         if (position->left == nullptr) {
             cout << "Invalid move!" << endl;
             return;
         }
+        playeryaxix=playeryaxix-1;
         move(position->left);
     }
 
@@ -312,6 +353,7 @@ public:
             cout << "Invalid move!" << endl;
             return;
         }
+         playeryaxix=playeryaxix+1;
         move(position->right);
     }
 
@@ -320,6 +362,7 @@ public:
             cout << "Invalid move!" << endl;
             return;
         }
+        playerxaxix=playerxaxix-1;
         move(position->up);
     }
 int getundomoves()
@@ -331,6 +374,7 @@ int getundomoves()
             cout << "Invalid move!" << endl;
             return;
         }
+         playerxaxix=playerxaxix+1;
         move(position->down);
     }
 
@@ -409,6 +453,7 @@ int main() {
        cout<<"No of remaining moves are : " << p.noofmovesremaining<<endl;
         g.print();
        if (p.isGameOver()) {
+        p.printcoinslocation();
             break;
         }
     } while (choice != 'q');
