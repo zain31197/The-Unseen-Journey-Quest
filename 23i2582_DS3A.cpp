@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stack>
 #include <cstdlib>
 #include <vector>
 #include <ctime>
@@ -20,6 +19,56 @@ public:
         this->up = NULL;
         this->right = NULL;
     }
+};
+class stack
+{
+    public:
+    struct stacknode
+    {
+    node *value;
+    stacknode *next;
+    
+    };
+    stacknode *top;
+    
+    stack()
+    {
+        top=NULL;
+    }
+    void push(node *value)
+    {
+     stacknode *NN=new stacknode();
+     NN->value=value;
+     NN->next=top;
+     top=NN;
+    }
+    node * pop()
+    {
+        if(top==NULL)
+        {
+            cout<<"Stack is empty"<<endl;
+            return NULL ;
+        }
+        stacknode *temp=top;
+        node *temppop=top->value;
+        top=top->next;
+        delete temp;
+        return temppop;
+    }
+    node *TopNode()
+    {
+        if(top==NULL)
+        {
+            cout<<"Stack is empty"<<endl;
+            return NULL;
+        }
+        return top->value;
+    }
+    bool empty()
+    {
+        return top==NULL;
+    }
+
 };
 
 class grid {
@@ -241,7 +290,7 @@ public:
 class playermovement {
 public:
     node* position;
-    stack<node*> undo;
+    stack undo;
     vector<pair<int, int>> collectedCoins;
     int remainingundo;
     int noofmovesremaining;
@@ -261,6 +310,7 @@ public:
     {
         cout<<"x"<<playerxaxix<<endl;
         cout<<"y"<<playeryaxix<<endl;
+        
     }
     void setkeystatustrue()
     {
@@ -294,7 +344,10 @@ public:
         if (newposition->data == 'B') {
             cout << "You steped in to Bomb Game Over" << endl;
             calculatefinalscore();
-             gameover=true;
+            gameover=true;
+              position->data = '.';
+        position = newposition;
+        position->data = 'P';
             return;
         }
         if(newposition->data=='K')
@@ -332,6 +385,11 @@ public:
     }
     void printcoinslocation()
     {
+        if(collectedCoins.empty())
+        {
+            cout<<"No Coins are collected"<<endl;
+            return ;
+        }
         cout<<"Coins Collected at these locations"<<endl;
         for(const auto &coin:collectedCoins)
         {
@@ -388,7 +446,7 @@ int getundomoves()
             return;
         }
         position->data = '.';
-        position = undo.top();
+        position = undo.TopNode();
         undo.pop();
         position->data = 'P';
         remainingundo--;
@@ -435,7 +493,8 @@ int main() {
         p.setundovalues(1);
     }
     char choice;
-    do {
+    while(choice!='q')
+    {
         cout << "Enter move (w/a/s/d) or 'u' for undo: ";
         cin >> choice;
         switch (choice) {
@@ -451,12 +510,24 @@ int main() {
         g.sensepower();
         cout<<"Score : "<<score<<endl;
        cout<<"No of remaining moves are : " << p.noofmovesremaining<<endl;
+
+       cout<<"Key Status : ";
+       if(p.getkeystatus()==0)
+       {
+        cout<<"NOT FOUND"<<endl;
+       }
+       else 
+       {
+        cout<<"FOUND"<<endl;
+       }
         g.print();
        if (p.isGameOver()) {
+        cout<<"Game is Over!"<<endl;
         p.printcoinslocation();
+        p.calculatefinalscore();
             break;
         }
-    } while (choice != 'q');
+    } 
     
     return 0;
 }
