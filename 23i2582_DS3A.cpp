@@ -80,6 +80,8 @@ public:
     int currentdistance;
     int playerxaxix;
     int playeryaxix;
+    int keyxaxix;
+    int keyyaxix;
 
     grid() {
         head = NULL;
@@ -89,11 +91,26 @@ public:
         currentdistance = 0;
         playerxaxix=0;
         playeryaxix=0;
+        keyxaxix=0;
+        keyyaxix=0;
     }
     void setplayeraxix(int x,int y)
     {
         this->playerxaxix=x;
         this->playeryaxix=y;
+    }
+    int getkeyxaxix()
+    {
+        return keyxaxix;
+    }
+    int getkeyyaxix()
+    {
+        return keyyaxix;
+    }
+     void setkeyaxix(int x,int y)
+    {
+        this->keyxaxix=x;
+        this->keyyaxix=y;
     }
     int getplayerxaxix()
     {
@@ -152,8 +169,9 @@ public:
     }
 
     void placerandomelements() {
-        char elem[] = { 'P', 'K', 'D', 'B' };
-        int size = 4;
+        //  player key Door Boomb1 Boomb2 Boomb3
+        char elem[] = { 'P', '.', 'D', 'B','B' ,'B'};
+        int size = 6;
         int randomRow, randomCol;
         node* targetNode;
         for (int i = 0; i < size; i++) {
@@ -167,6 +185,11 @@ public:
             {
             setplayeraxix(randomRow,randomCol);
             }
+             if(elem[i]=='.')
+            {
+            setkeyaxix(randomRow,randomCol);
+            }
+
             targetNode->data = elem[i];
         }
     }
@@ -200,19 +223,23 @@ public:
         }
     }
 
-    node* getkeylocation() {
-        node* temp = head;
-        while (temp != nullptr) {
-            node* temp2 = temp;
-            while (temp2 != nullptr) {
-                if (temp2->data == 'K') {
-                    return temp2;
-                }
-                temp2 = temp2->right;
-            }
-            temp = temp->down;
-        }
-        return nullptr;
+    // node* getkeylocation() {
+    //     node* temp = head;
+    //     while (temp != nullptr) {
+    //         node* temp2 = temp;
+    //         while (temp2 != nullptr) {
+    //             if (temp2->data == 'K') {
+    //                 return temp2;
+    //             }
+    //             temp2 = temp2->right;
+    //         }
+    //         temp = temp->down;
+    //     }
+    //     return nullptr;
+    // }
+    void printgamestartdistance()
+    {
+        cout<<"game sart distance : "<<gamestartdistance<<endl;
     }
 
     node* getplayerposition() {
@@ -230,31 +257,13 @@ public:
         return nullptr;
     }
   
-
+    int getgamestartdistance()
+    {
+        return gamestartdistance;
+    }
     void cityblockdistanceformula() {
-        node* key = getkeylocation();
-        node* playerloc = getplayerposition();
-        if (!key || !playerloc) return;
-
-        int playerx = 0, playery = 0;
-        int keyx = 0, keyy = 0;
-        node* temp = head;
-        for (int i = 0; i < rows; i++) {
-            node* temp2 = temp;
-            for (int j = 0; j < cols; j++) {
-                if (temp2 == key) {
-                    keyx = i;
-                    keyy = j;
-                }
-                if (temp2 == playerloc) {
-                    playerx = i;
-                    playery = j;
-                }
-                temp2 = temp2->right;
-            }
-            temp = temp->down;
-        }
-        currentdistance = abs(playerx - keyx) + abs(playery - keyy);
+        // cout<<"key " <<keyxaxix<<" , "<<keyyaxix<<endl;
+        currentdistance = abs(playerxaxix-keyxaxix) + abs(playeryaxix - keyyaxix);
         if (gamestartdistance == 0) {
             gamestartdistance = currentdistance;
         }
@@ -262,14 +271,13 @@ public:
 
     void sensepower() {
         cityblockdistanceformula();
-        if (gamestartdistance > currentdistance) {
+        if (gamestartdistance >= currentdistance) {
             cout << "You are getting closer." << endl;
-        } else if (currentdistance > gamestartdistance) {
+        } if (currentdistance > gamestartdistance) {
             cout << "You are getting farther." << endl;
-        } else {
-            cout << "You are at the same distance." << endl;
-        }
-        gamestartdistance = currentdistance; 
+        } 
+        // cout<<"gamestartdistance : "<<gamestartdistance<<endl;
+        // cout<<"current distance : "<<currentdistance<<endl;
     }
 
     void print() {
@@ -298,13 +306,33 @@ public:
     bool keystatus;
     int playerxaxix;
     int playeryaxix;
+    int keyxaxix;
+    int keyyaxix;
     playermovement(grid& g) {
         position = g.getplayerposition();
-        noofmovesremaining=15;
+        noofmovesremaining=0;
         gameover=false;
         keystatus=false;
         this->playerxaxix=g.getplayerxaxix();
         this->playeryaxix=g.getplayeryaxix();
+        this->keyxaxix=g.getkeyxaxix();
+        this->keyyaxix=g.getkeyyaxix();
+    }
+    int getplayerxaxix()
+    {
+        return playerxaxix;
+    }
+    int getplayeryaxix()
+    {
+        return playeryaxix;
+    }
+    void setnoofmoves(int n)
+    {
+        this->noofmovesremaining=n;
+    }
+    int getremainingnoofmoves()
+    {
+        return noofmovesremaining;
     }
     void printplayeraxix()
     {
@@ -350,10 +378,12 @@ public:
         position->data = 'P';
             return;
         }
-        if(newposition->data=='K')
+        if(newposition->data=='.'&&playerxaxix==keyxaxix&&playeryaxix==keyyaxix)
         {
             setkeystatustrue();
         }
+
+       
         if(newposition->data=='D')
         {
             if(getkeystatus()==true)
@@ -382,6 +412,10 @@ public:
         position->data = '.';
         position = newposition;
         position->data = 'P';
+    }
+    void revealkeyaxix()
+    {
+        cout<<"Key was hidden at : "<<keyxaxix<<","<<keyyaxix<<endl;
     }
     void printcoinslocation()
     {
@@ -477,36 +511,100 @@ int main() {
     g.placerandomelements();
     g.placecoinrandomly();
     g.print();
-    g.sensepower();
-    
+    g.cityblockdistanceformula();
+    // g.sensepower();
+    g.printgamestartdistance();
     playermovement p(g);
      if(level==1)
     {
        p.setundovalues(6);
+       int n=g.getgamestartdistance()+6;
+       p.setnoofmoves(n);
     }
     else if(level==2)
     {
             p.setundovalues(4);
+             int n=g.getgamestartdistance()+2;
+       p.setnoofmoves(n);
     }
     else 
     {
         p.setundovalues(1);
+         int n=g.getgamestartdistance();
+       p.setnoofmoves(n);
     }
     char choice;
+    char lastturn='\0';
     while(choice!='q')
     {
         cout << "Enter move (w/a/s/d) or 'u' for undo: ";
         cin >> choice;
+        bool invalidmove=false;
+        switch (choice)
+        {
+        case 'w' :
+        if(lastturn=='s')
+        {
+            cout<<"You cannot move back without using undo feature"<<endl;
+            invalidmove=true;
+        }
+        break;
+         case 's' :
+        if(lastturn=='w')
+        {
+            cout<<"You cannot move back up without using undo feature"<<endl;
+            invalidmove=true;
+        }
+        break;
+        case 'd' :
+        if(lastturn=='a')
+        {
+            cout<<"You cannot move back left without using undo feature"<<endl;
+            invalidmove=true;
+        }
+        break;
+        case 'a' :
+        if(lastturn=='d')
+        {
+            cout<<"You cannot move back right without using undo feature"<<endl;
+            invalidmove=true;
+        }
+        break;
+        default :
+        break;
+        }
+        if(invalidmove)
+        {
+            continue;
+        }
         switch (choice) {
-            case 'w': p.upmove(); break;
-            case 'a': p.leftmove(); break;
-            case 's': p.downmove(); break;
-            case 'd': p.rightmove(); break;
-            case 'u': p.undofeature(); break;
+            case 'w':
+             p.upmove();
+            lastturn='w';
+             break;
+            case 'a': 
+            p.leftmove(); 
+             lastturn='a';
+            break;
+            case 's': 
+            p.downmove();
+             lastturn='s';
+            break;
+            case 'd': 
+            p.rightmove(); 
+             lastturn='d';
+            break;
+            case 'u': 
+            p.undofeature();
+            lastturn='\0';
+             break;
             default: cout << "Invalid input!" << endl;
         }
         cout<<"Remaining Undo Moves "<<p.getundomoves()<<endl;
         cout<<"Hint : "<<endl;
+        int playerx=p.getplayerxaxix();
+        int playery=p.getplayeryaxix();
+        g.setplayeraxix(playerx,playery);
         g.sensepower();
         cout<<"Score : "<<score<<endl;
        cout<<"No of remaining moves are : " << p.noofmovesremaining<<endl;
@@ -525,6 +623,7 @@ int main() {
         cout<<"Game is Over!"<<endl;
         p.printcoinslocation();
         p.calculatefinalscore();
+        p.revealkeyaxix();
             break;
         }
     } 
