@@ -1,58 +1,104 @@
-# DSA_ASSIGNMENT_2
-The Unseen Journey Quest
-The Unseen Journey Quest is a grid-based game developed in C++ where the player navigates through a dungeon to find a hidden key and exit through a door. The dungeon contains coins, traps (bombs), and obstacles. The player must collect coins, avoid traps, and find the exit door after collecting the key. The game offers three levels of difficulty—Easy, Medium, and Hard.
+# The Unseen Journey Quest
 
-Features
-Grid-Based Movement: The player moves within the grid using the keys w, a, s, and d for up, left, down, and right movements respectively.
-Randomly Generated Dungeon: The dungeon elements such as the player's starting position (P), key (K), exit door (D), bombs (B), and coins (C) are randomly placed.
-Undo Feature: The player has a limited number of undo moves depending on the difficulty level, allowing them to reverse their last movement.
-Scoring System: The player gains points for each coin collected and for the number of unused moves remaining when they exit the dungeon successfully.
-Difficulty Levels:
-Easy: Larger grid with more moves and undo opportunities.
-Medium: Moderate grid with fewer moves and undo opportunities.
-Hard: Smallest grid with minimal moves and undo opportunities.
-Gameplay
-The game begins with a randomly generated dungeon grid based on the selected difficulty level.
-The objective is to find the key (K), collect coins (C), and exit through the door (D) while avoiding traps (B).
-If the player steps on a bomb (B), the game ends immediately.
-The player cannot move in the opposite direction of their last move without using an undo.
-Controls
-w: Move up
-a: Move left
-s: Move down
-d: Move right
-u: Undo the last move (limited uses based on difficulty level)
-q: Quit the game
-Code Structure
-node Class: Represents each cell in the grid. It stores the element (P, K, D, etc.) and pointers to adjacent nodes (up, down, left, right).
-stack Class: A custom stack implementation to store the player's movement history for the undo feature.
-grid Class: Manages the creation and manipulation of the dungeon grid, including placing random elements, calculating distances, and generating hints.
-playermovement Class: Handles the player’s movements, collects coins, uses undo, and checks game status.
-Scoring System
-Coins: Each coin collected adds 2 points and provides an additional undo move.
-Remaining Moves: For every unused move at the end of the game, the player gains 1 point.
-Final Score Calculation: The sum of points from collected coins and unused moves.
-Game Levels
-Easy:
-Grid Size: 10x10
-Initial Undo Moves: 6
-Initial Move Limit: Game start distance + 6
-Medium:
-Grid Size: 15x15
-Initial Undo Moves: 4
-Initial Move Limit: Game start distance + 2
-Hard:
-Grid Size: 20x20
-Initial Undo Moves: 1
-Initial Move Limit: Game start distance
-Future Enhancements
-Add support for diagonal movements.
-Implement a graphical interface using libraries like Ncurses or SFML for better visualization.
-Add more elements such as traps that move or doors that require multiple keys.
-License
-This project is licensed under the MIT License. Feel free to modify and distribute as you wish.
+The Unseen Journey Quest is a grid-based dungeon exploration game developed in **C++**. The player navigates through a procedurally generated dungeon, collecting coins, avoiding deadly traps, and ultimately finding a key to unlock the exit. The game challenges players with limited moves and offers an undo feature to backtrack — all depending on the chosen difficulty level.
 
-Author
-Zain Shahid
+---
 
-Enjoy the game!
+## 🎮 Features
+
+- **Grid-Based Movement:** Navigate the dungeon using `w`, `a`, `s`, `d` keys.
+- **Random Dungeon Generation:** Player (P), Key (K), Exit Door (D), Bombs (B), and Coins (C) are all placed randomly.
+- **Undo Mechanic:** A limited undo option allows players to reverse previous moves.
+- **Difficulty Modes:** Easy, Medium, and Hard with varying grid sizes, move limits, and undo allowances.
+- **Scoring System:**
+  - Coins: +2 points per coin
+  - Unused Moves: +1 point per move remaining when exiting the dungeon
+
+---
+
+## 🧠 Code Architecture
+
+### 🔹 `node` Class
+- Represents each cell in the grid.
+- Stores character (`P`, `K`, `D`, `B`, `C`, etc.)
+- Contains pointers to adjacent nodes (`up`, `down`, `left`, `right`)
+
+### 🔹 `stack` Class
+- Custom implementation to store move history.
+- Used for undo functionality.
+
+### 🔹 `grid` Class
+- Responsible for grid creation and random element placement.
+- Handles calculation of path distances and hint generation.
+
+### 🔹 `playermovement` Class
+- Manages movement logic, coin collection, trap checks, and undo operation.
+
+---
+
+## 🧪 Gameplay
+
+1. Select a difficulty level:
+   - **Easy** (10x10 grid, 6 undos, extra moves)
+   - **Medium** (15x15 grid, 4 undos)
+   - **Hard** (20x20 grid, 1 undo, minimal moves)
+
+2. Explore the dungeon:
+   - Use `w`, `a`, `s`, `d` to move.
+   - Find the **key (K)**.
+   - Collect **coins (C)**.
+   - Avoid **bombs (B)** — stepping on one ends the game.
+   - Reach the **door (D)** to win.
+
+3. Use `u` to undo your last move (limited by difficulty).
+4. Use `q` to quit the game.
+
+---
+
+## 🧮 Scoring
+
+| Action              | Points     |
+|---------------------|------------|
+| Coin Collected (C)  | +2         |
+| Each Remaining Move | +1         |
+| Hitting a Bomb (B)  | Game Over  |
+
+---
+
+## 🔧 Controls
+
+| Key | Action         |
+|-----|----------------|
+| `w` | Move Up        |
+| `a` | Move Left      |
+| `s` | Move Down      |
+| `d` | Move Right     |
+| `u` | Undo Move      |
+| `q` | Quit Game      |
+
+---
+
+## 🚀 Future Enhancements
+
+- Diagonal movement support.
+- Graphical UI using **Ncurses** or **SFML**.
+- New elements: moving traps, multi-key doors.
+- Multiplayer mode or AI opponent.
+- Save/load game states.
+
+---
+
+## 🧑‍💻 Author
+
+**Zain Shahid**
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).  
+Feel free to fork, modify, and distribute!
+
+---
+
+## 🎉 Enjoy the game and may your journey be unseen but victorious!
